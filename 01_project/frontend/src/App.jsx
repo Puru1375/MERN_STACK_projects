@@ -7,7 +7,6 @@ import HomePage from './pages/homePage.jsx'
 const App = () => {
   return (
     <div data-theme="forest">
-      <button className="btn btn-error">clik me</button>
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/create" element={<CreatePage />} />
