@@ -29,20 +29,34 @@ import noteRoutes from './routes/noteRoutes.js';
 import connectDB from './config/db.js';
 import rateLimiter from './midleware/rateLimiter.js';
 import dotenv from 'dotenv';
+import path from 'path';
 
 dotenv.config();
 
 const PORT = process.env.PORT || 5001
 
+const __dirname = path.resolve();
+
 const app = express();
 
-app.use(cors());
+if(process.env.NODE_ENV !== "production"){
+    app.use(cors());
+}
 
 app.use(express.json()); // for parsing application/json
 
 app.use(rateLimiter);
 
 app.use("/api/notes", noteRoutes);
+
+
+if(process.env.NODE_ENV === "production"){
+    app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+    app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+    });
+}
 
 
 connectDB().then(() => {
