@@ -22,7 +22,7 @@ const DashBoradPage = () => {
         const res = await axios.post("http://localhost:5000/dashboard", {
           token: auth,
         });
-
+        
         setUser(res.data.user);
         setLoading(false);
       } catch (error) {
@@ -38,6 +38,39 @@ const DashBoradPage = () => {
 
     fetchUserData();
   }, [navigate]);
+
+
+  useEffect(() => {
+    fetchcount();
+  }, [user]);
+
+  const fetchcount = async () => {
+    try {
+      const auth = localStorage.getItem("token");
+      if (!auth) {
+        navigate("/login");
+        return;
+      }
+      if (user.role !== "student") {
+        return;
+      }
+          const countRes = await axios.get(
+            "http://localhost:5000/dashboard/applied-jobs-count", {
+              headers: {
+                Authorization: `Bearer ${auth}`,              
+              },
+            }
+          );
+
+      console.log(countRes.data.count);
+      setCount(countRes.data.count);
+    } catch (error) {
+      console.error("Count fetch error:", error);
+    }
+
+  }
+
+ 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
@@ -83,6 +116,7 @@ const DashBoradPage = () => {
         ) : (
           <div>
             {user.role === "student" && (
+              
               <div>
                 <div className="bg-white shadow-md rounded-lg p-6">
                   <h2 className="text-2xl font-semibold mb-4">

@@ -178,4 +178,22 @@ router.post('/jobs/:id/apply', authenticate, async (req, res) => {
     }
 });
 
+// Get count of jobs applied by student
+router.get('/applied-jobs-count', authenticate, async (req, res) => {
+    try {
+        // Check if user is a student
+        if (req.user.role !== 'student') {
+            return res.status(403).json({ message: "Access denied" });
+        }
+
+        // Count applications by this student
+        const count = await Application.countDocuments({ student: req.user._id });
+        
+        res.json({ count });
+    } catch (error) {
+        console.error('Error fetching applied jobs count:', error);
+        res.status(500).json({ message: "Failed to fetch applied jobs count" });
+    }
+});
+
 export default router
